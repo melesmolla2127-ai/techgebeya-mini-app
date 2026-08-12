@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>TechGebeya | Secondhand Tech Marketplace</title>
+  <title>TechGebeya | Secondhand Laptops & Phones Marketplace</title>
 
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -148,7 +148,7 @@
       background: var(--bg-color);
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 600;
@@ -255,7 +255,7 @@
       cursor: pointer;
     }
 
-    /* FAB */
+    /* Floating Action Button */
     .fab {
       position: fixed;
       bottom: 20px;
@@ -355,9 +355,15 @@
       font-weight: 600;
     }
 
-    /* Forms */
+    /* Extended Forms */
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
     .form-group {
       margin-bottom: 12px;
+      flex: 1;
     }
 
     .form-group label {
@@ -382,7 +388,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 14px 0;
+      margin: 10px 0;
       font-size: 12px;
     }
 
@@ -411,7 +417,7 @@
   <div class="header">
     <div class="brand-info">
       <h1>TechGebeya ቴክ ገበያ</h1>
-      <p>Escrow Manager: @brook_97</p>
+      <p>Laptops & Phones Only • Escrow: @brook_97</p>
     </div>
     <div class="user-profile">
       <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
@@ -423,24 +429,23 @@
     </div>
   </div>
 
-  <!-- Search & Category Bar -->
+  <!-- Search & Category Bar (Laptops & Phones Only) -->
   <div class="search-filter-container">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" class="search-input" placeholder="Search Laptops, iPhones, Cameras..." />
+      <input type="text" id="search-input" class="search-input" placeholder="Search MacBook, iPhone, Galaxy, Dell..." />
     </div>
     <div class="filter-bar">
-      <button class="filter-chip active" onclick="setCategory('all', this)">All Items</button>
+      <button class="filter-chip active" onclick="setCategory('all', this)">All Devices</button>
       <button class="filter-chip" onclick="setCategory('laptop', this)">💻 Laptops</button>
       <button class="filter-chip" onclick="setCategory('phone', this)">📱 Phones</button>
-      <button class="filter-chip" onclick="setCategory('camera', this)">📷 Cameras</button>
     </div>
   </div>
 
   <!-- Catalog Grid -->
   <div class="catalog" id="catalog-list"></div>
 
-  <!-- FAB -->
+  <!-- Floating Action Button -->
   <button class="fab" onclick="openModal('sell-modal')">
     <span>+</span> Sell Device
   </button>
@@ -455,22 +460,27 @@
       <img id="detail-img" class="detail-img" src="" alt="Device" />
       
       <div class="detail-section">
-        <div class="detail-label">Price</div>
+        <div class="detail-label">Asking Price</div>
         <div class="detail-val" id="detail-price" style="font-size:18px; color: var(--button-color);">0 ETB</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Specifications</div>
+        <div class="detail-label">Hardware Specifications</div>
         <div class="detail-val" id="detail-specs">-</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Condition & Health</div>
+        <div class="detail-label">Battery & Condition</div>
         <div class="detail-val" id="detail-health">-</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Seller Phone / Handle</div>
+        <div class="detail-label">Included Accessories & Extras</div>
+        <div class="detail-val" id="detail-extras">-</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-label">Seller Contact & Location</div>
         <div class="detail-val" id="detail-seller">-</div>
       </div>
 
@@ -478,11 +488,11 @@
     </div>
   </div>
 
-  <!-- Buy Device Modal (Collects Buyer Info) -->
+  <!-- Buy Device Modal -->
   <div class="modal-overlay" id="buy-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">Complete Purchase</div>
+        <div class="modal-title">Complete Purchase Request</div>
         <button class="close-btn" onclick="closeModal('buy-modal')">✕</button>
       </div>
       <form id="buy-form" onsubmit="handleBuySubmit(event)">
@@ -497,7 +507,7 @@
 
         <div class="form-group">
           <label>Your Full Name</label>
-          <input type="text" id="buy-fullname" class="form-control" placeholder="e.g. Meles Molla" required />
+          <input type="text" id="buy-fullname" class="form-control" placeholder="e.g. Abebe Bikila" required />
         </div>
 
         <div class="form-group">
@@ -510,61 +520,85 @@
           <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem, Near Edna Mall" required></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Confirm Order to @brook_97</button>
+        <button type="submit" class="btn-submit">Submit Escrow Order to @brook_97</button>
       </form>
     </div>
   </div>
 
-  <!-- Sell Device Modal (Collects Photo & Phone Number) -->
+  <!-- Extended Sell Device Modal (Featured Form for Laptop/Phone & Photos) -->
   <div class="modal-overlay" id="sell-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">List Your Device</div>
+        <div class="modal-title">List Laptop or Phone</div>
         <button class="close-btn" onclick="closeModal('sell-modal')">✕</button>
       </div>
       <form id="sell-form" onsubmit="handleSellSubmit(event)">
+        
         <div class="form-group">
-          <label>Device Title</label>
-          <input type="text" id="sell-title" class="form-control" placeholder="e.g. MacBook Pro M1 2020" required />
-        </div>
-
-        <div class="form-group">
-          <label>Category</label>
+          <label>Device Category</label>
           <select id="sell-category" class="form-control" required>
-            <option value="laptop">Laptop</option>
-            <option value="phone">Phone</option>
-            <option value="camera">Camera</option>
+            <option value="laptop">💻 Laptop</option>
+            <option value="phone">📱 Phone</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Hardware Specifications</label>
-          <input type="text" id="sell-specs" class="form-control" placeholder="e.g. 16GB RAM, 512GB SSD" required />
+          <label>Brand & Exact Model</label>
+          <input type="text" id="sell-title" class="form-control" placeholder="e.g. iPhone 14 Pro Max / Dell XPS 15 9520" required />
         </div>
 
-        <div class="form-group">
-          <label>Condition Score (1 to 10)</label>
-          <input type="number" id="sell-condition" class="form-control" min="1" max="10" placeholder="e.g. 9" required />
+        <div class="form-row">
+          <div class="form-group">
+            <label>RAM Size</label>
+            <input type="text" id="sell-ram" class="form-control" placeholder="e.g. 16GB / 6GB" required />
+          </div>
+          <div class="form-group">
+            <label>Storage Capacity</label>
+            <input type="text" id="sell-storage" class="form-control" placeholder="e.g. 512GB SSD / 256GB" required />
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Asking Price (ETB)</label>
-          <input type="number" id="sell-price" class="form-control" placeholder="e.g. 65000" required />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Battery Health (%)</label>
+            <input type="text" id="sell-battery" class="form-control" placeholder="e.g. 88% / Normal" required />
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            <input type="text" id="sell-color" class="form-control" placeholder="e.g. Space Gray, Deep Purple" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Condition Score (1-10)</label>
+            <input type="number" id="sell-condition" class="form-control" min="1" max="10" placeholder="e.g. 9" required />
+          </div>
+          <div class="form-group">
+            <label>Asking Price (ETB)</label>
+            <input type="number" id="sell-price" class="form-control" placeholder="e.g. 65000" required />
+          </div>
         </div>
 
         <div class="form-group">
           <label>Seller Phone Number</label>
-          <input type="tel" id="sell-phone" class="form-control" placeholder="e.g. 0912345678" required />
+          <input type="tel" id="sell-phone" class="form-control" placeholder="e.g. 0911234567" required />
         </div>
 
         <div class="form-group">
-          <label>Device Photo Link (URL)</label>
-          <input type="url" id="sell-photo" class="form-control" placeholder="e.g. https://images.unsplash.com/..." required />
+          <label>Device Photo Link (Image URL)</label>
+          <input type="url" id="sell-photo" class="form-control" placeholder="e.g. https://images.unsplash.com/photo-..." required />
+          <span style="font-size:10px; color:var(--hint-color);">Paste a direct photo URL of your laptop/phone.</span>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="sell-box" />
+          <label for="sell-box">Includes Original Box & Accessories</label>
         </div>
 
         <div class="checkbox-group">
           <input type="checkbox" id="sell-verify" required />
-          <label for="sell-verify">I agree to present Kebele ID & verify IMEI upon sale.</label>
+          <label for="sell-verify">I agree to present Kebele ID & verify IMEI/Serial upon inspection.</label>
         </div>
 
         <button type="submit" class="btn-submit">Publish Listing to Marketplace</button>
@@ -573,7 +607,7 @@
   </div>
 
   <script>
-    const ADMIN_USERNAME = "@brook_97";
+    const ADMIN_USERNAME = "brook_97";
     const tg = window.Telegram?.WebApp;
     
     if (tg) {
@@ -581,7 +615,7 @@
       tg.expand();
     }
 
-    // Set User Info
+    // Set Telegram User Info
     const user = tg?.initDataUnsafe?.user;
     if (user) {
       const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
@@ -597,50 +631,73 @@
         document.getElementById('user-avatar-placeholder').innerText = (user.first_name || 'U').charAt(0).toUpperCase();
       }
 
-      // Pre-fill Buyer Name
       document.getElementById('buy-fullname').value = fullName;
     } else {
       document.getElementById('user-name').innerText = 'Browser Guest';
       document.getElementById('user-username').innerText = '@guest';
     }
 
-    // Inventory Data
+    // Sample Inventory Data (Laptops & Phones Only)
     let products = [
       {
         id: "TG-101",
-        title: "MacBook Air M1 (2020)",
+        title: "Apple MacBook Pro 14\" M1 Pro",
         category: "laptop",
-        specs: "8GB RAM | 256GB SSD | Apple Silicon",
-        condition: "9/10 Condition",
-        battery: "Battery Health 88%",
-        price: 65000,
-        phone: "0911002233",
+        ram: "16GB",
+        storage: "512GB NVMe SSD",
+        battery: "Battery Health 91%",
+        color: "Space Gray",
+        box: true,
+        condition: "9.5/10 Condition",
+        price: 115000,
+        phone: "0911223344",
         seller: "@brook_97 (Bole SafeHub)",
         img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "TG-102",
-        title: "iPhone 13 Pro (128GB)",
+        title: "iPhone 14 Pro Max (256GB)",
         category: "phone",
-        specs: "Sierra Blue | Factory Unlocked",
-        condition: "8.5/10 Condition",
-        battery: "Battery 86% | IMEI Verified",
-        price: 52000,
+        ram: "6GB",
+        storage: "256GB",
+        battery: "Battery Health 89%",
+        color: "Deep Purple",
+        box: true,
+        condition: "9/10 Condition",
+        price: 78000,
         phone: "0922114455",
         seller: "@kal_mobiles (Kazanchis)",
         img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "TG-103",
-        title: "Sony Alpha A6400 Mirrorless",
-        category: "camera",
-        specs: "Body + 16-50mm Lens | 4K Video",
-        condition: "9.5/10 Condition",
-        battery: "Shutter Count 4,200",
-        price: 78000,
+        title: "Dell XPS 13 Touch (i7 11th Gen)",
+        category: "laptop",
+        ram: "16GB",
+        storage: "512GB SSD",
+        battery: "Battery Health 85%",
+        color: "Platinum Silver",
+        box: false,
+        condition: "8.5/10 Condition",
+        price: 58000,
         phone: "0933445566",
         seller: "@eyasu_gear (Piassa)",
-        img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=80"
+        img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80"
+      },
+      {
+        id: "TG-104",
+        title: "Samsung Galaxy S23 Ultra (512GB)",
+        category: "phone",
+        ram: "12GB",
+        storage: "512GB",
+        battery: "Battery Health 96%",
+        color: "Phantom Black",
+        box: true,
+        condition: "9.8/10 Condition",
+        price: 72000,
+        phone: "0944556677",
+        seller: "@emran_tech (4 Kilo)",
+        img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=400&q=80"
       }
     ];
 
@@ -654,12 +711,12 @@
       const filtered = products.filter(p => {
         const matchesCategory = (currentCategory === 'all' || p.category === currentCategory);
         const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              p.specs.toLowerCase().includes(searchQuery.toLowerCase());
+                              `${p.ram} ${p.storage} ${p.color}`.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state">No secondhand tech items found matching your query.</div>`;
+        container.innerHTML = `<div class="empty-state">No secondhand laptops or phones found matching your query.</div>`;
         return;
       }
 
@@ -672,14 +729,16 @@
           }
         };
 
+        const specsSummary = `${p.ram} RAM | ${p.storage} | ${p.color}`;
+
         card.innerHTML = `
           <img src="${p.img}" class="product-thumb" alt="${p.title}" />
           <div class="product-info">
             <div>
               <div class="product-title">${p.title}</div>
-              <div class="product-specs">${p.specs}</div>
+              <div class="product-specs">${specsSummary}</div>
               <div class="badges">
-                <span class="badge badge-verified">✓ Kebele Verified</span>
+                <span class="badge badge-verified">✓ IMEI/Kebele Verified</span>
                 <span class="badge badge-condition">${p.condition}</span>
               </div>
             </div>
@@ -715,8 +774,9 @@
       document.getElementById('detail-title').innerText = p.title;
       document.getElementById('detail-img').src = p.img;
       document.getElementById('detail-price').innerText = `${p.price.toLocaleString()} ETB`;
-      document.getElementById('detail-specs').innerText = p.specs;
+      document.getElementById('detail-specs').innerText = `RAM: ${p.ram} • Storage: ${p.storage} • Color: ${p.color}`;
       document.getElementById('detail-health').innerText = `${p.condition} • ${p.battery}`;
+      document.getElementById('detail-extras').innerText = p.box ? "Original Box & Charger Included ✓" : "Device Only (Charger Included)";
       document.getElementById('detail-seller').innerText = `${p.seller} (Phone: ${p.phone})`;
 
       const buyBtn = document.getElementById('detail-buy-btn');
@@ -740,53 +800,75 @@
     function handleBuySubmit(event) {
       event.preventDefault();
 
+      const itemTitle = document.getElementById('buy-item-title').value;
+      const itemPrice = document.getElementById('buy-item-price').value + " ETB";
+      const buyerName = document.getElementById('buy-fullname').value;
+      const buyerPhone = document.getElementById('buy-phone').value;
+      const buyerAddress = document.getElementById('buy-address').value;
+      const buyerTelegramHandle = user?.username ? `@${user.username}` : "Not Set";
+
       const orderData = {
         action: "buy_device_request",
-        adminTarget: ADMIN_USERNAME,
+        targetAdmin: `@${ADMIN_USERNAME}`,
         itemId: document.getElementById('buy-item-id').value,
-        itemTitle: document.getElementById('buy-item-title').value,
-        itemPrice: document.getElementById('buy-item-price').value + " ETB",
-        buyerName: document.getElementById('buy-fullname').value,
-        buyerPhone: document.getElementById('buy-phone').value,
-        buyerAddress: document.getElementById('buy-address').value,
-        buyerTelegramHandle: user?.username ? `@${user.username}` : "Not Set"
+        itemTitle: itemTitle,
+        itemPrice: itemPrice,
+        buyerName: buyerName,
+        buyerPhone: buyerPhone,
+        buyerAddress: buyerAddress,
+        buyerTelegramHandle: buyerTelegramHandle
       };
 
       tg?.HapticFeedback?.notificationOccurred('success');
 
-      // Send JSON to Telegram Bot
+      // Send JSON data to Telegram Bot Backend
       tg?.sendData(JSON.stringify(orderData));
 
-      // Construct Direct Telegram Order Message to @brook_97
+      // Construct Direct Telegram Message Link to @brook_97
       const textMessage = `🛒 *New TechGebeya Buy Order*%0A%0A` +
-                          `*Device:* ${orderData.itemTitle}%0A` +
-                          `*Price:* ${orderData.itemPrice}%0A` +
-                          `*Buyer Name:* ${orderData.buyerName}%0A` +
-                          `*Phone:* ${orderData.buyerPhone}%0A` +
-                          `*Address:* ${orderData.buyerAddress}%0A` +
-                          `*Telegram:* ${orderData.buyerTelegramHandle}`;
+                          `*Device:* ${encodeURIComponent(itemTitle)}%0A` +
+                          `*Price:* ${encodeURIComponent(itemPrice)}%0A` +
+                          `*Buyer Name:* ${encodeURIComponent(buyerName)}%0A` +
+                          `*Phone:* ${encodeURIComponent(buyerPhone)}%0A` +
+                          `*Address:* ${encodeURIComponent(buyerAddress)}%0A` +
+                          `*Telegram Handle:* ${encodeURIComponent(buyerTelegramHandle)}`;
 
-      window.open(`https://t.me/brook_97?text=${textMessage}`, '_blank');
+      window.open(`https://t.me/${ADMIN_USERNAME}?text=${textMessage}`, '_blank');
 
       closeModal('buy-modal');
       document.getElementById('buy-form').reset();
     }
 
-    // Sell Form Submission Handler
+    // Sell Form Submission Handler (Featured Form)
     function handleSellSubmit(event) {
       event.preventDefault();
 
+      const category = document.getElementById('sell-category').value;
+      const title = document.getElementById('sell-title').value;
+      const ram = document.getElementById('sell-ram').value;
+      const storage = document.getElementById('sell-storage').value;
+      const battery = document.getElementById('sell-battery').value;
+      const color = document.getElementById('sell-color').value;
+      const conditionNum = document.getElementById('sell-condition').value;
+      const price = parseInt(document.getElementById('sell-price').value);
+      const phone = document.getElementById('sell-phone').value;
+      const photo = document.getElementById('sell-photo').value;
+      const box = document.getElementById('sell-box').checked;
+
       const newProduct = {
         id: "TG-" + Math.floor(100 + Math.random() * 900),
-        title: document.getElementById('sell-title').value,
-        category: document.getElementById('sell-category').value,
-        specs: document.getElementById('sell-specs').value,
-        condition: `${document.getElementById('sell-condition').value}/10 Condition`,
-        battery: "Kebele & IMEI Agreed",
-        price: parseInt(document.getElementById('sell-price').value),
-        phone: document.getElementById('sell-phone').value,
+        title: title,
+        category: category,
+        ram: ram,
+        storage: storage,
+        battery: `Battery ${battery}`,
+        color: color,
+        box: box,
+        condition: `${conditionNum}/10 Condition`,
+        price: price,
+        phone: phone,
         seller: user?.username ? `@${user.username}` : 'Community Seller',
-        img: document.getElementById('sell-photo').value
+        img: photo
       };
 
       products.unshift(newProduct);
@@ -798,7 +880,7 @@
 
       tg?.sendData(JSON.stringify({
         action: "new_device_listed",
-        adminTarget: ADMIN_USERNAME,
+        targetAdmin: `@${ADMIN_USERNAME}`,
         item: newProduct
       }));
     }
