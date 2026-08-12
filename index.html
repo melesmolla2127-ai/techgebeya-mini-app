@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>TechGebeya | Verified Secondhand Tech Marketplace</title>
+
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    /* Native Telegram CSS Variables */
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #ffffff);
+      --text-color: var(--tg-theme-text-color, #1c1c1e);
+      --hint-color: var(--tg-theme-hint-color, #8e8e93);
+      --link-color: var(--tg-theme-link-color, #007aff);
+      --button-color: var(--tg-theme-button-color, #007aff);
+      --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+      --secondary-bg-color: var(--tg-theme-secondary-bg-color, #f2f2f7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .brand-header {
+      text-align: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--button-color);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--hint-color);
+      margin-top: 2px;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: rgba(52, 199, 89, 0.15);
+      color: #34c759;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .card {
+      background-color: var(--secondary-bg-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--button-color);
+      color: var(--button-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      object-fit: cover;
+    }
+
+    .user-info h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .user-info p {
+      font-size: 13px;
+      color: var(--hint-color);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      color: var(--hint-color);
+      font-size: 13px;
+    }
+
+    .value {
+      font-weight: 500;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--button-color);
+      color: var(--button-text-color);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:active {
+      opacity: 0.85;
+    }
+
+    .raw-data {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--hint-color);
+      background: rgba(0, 0, 0, 0.04);
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 90px;
+      overflow-y: auto;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TechGebeya Branding Header -->
+  <div class="brand-header">
+    <div class="brand-title">TechGebeya ቴክ ገበያ</div>
+    <div class="brand-subtitle">Verified Secondhand Electronics & Escrow Trading</div>
+    <div class="badge">✓ Kebele ID & IMEI Protection Active</div>
+  </div>
+
+  <!-- User Account Profile Card -->
+  <div class="card">
+    <div class="user-header">
+      <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
+      <div id="user-initial" class="avatar">?</div>
+      <div class="user-info">
+        <h2 id="user-fullname">Loading TechGebeya Profile...</h2>
+        <p id="user-handle">@username</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 6px;">
+      <div class="detail-row">
+        <span class="label">Telegram ID</span>
+        <span id="user-id" class="value">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Language</span>
+        <span id="user-lang" class="value">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Account Security</span>
+        <span class="value" style="color: #34c759;">Verified Session</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketplace Quick Actions -->
+  <div class="card">
+    <button class="btn" id="explore-btn">Browse TechGebeya Catalog</button>
+  </div>
+
+  <!-- Telebirr Security Data Box -->
+  <div class="card">
+    <span class="label">Session Signature (initData Hash for Telebirr Escrow):</span>
+    <div class="raw-data" id="raw-init-data">No active session (Open inside Telegram)</div>
+  </div>
+
+  <script>
+    // Initialize Telegram WebApp SDK
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+
+      // Retrieve Telegram User Object
+      const user = tg.initDataUnsafe?.user;
+
+      if (user) {
+        const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+        document.getElementById('user-fullname').innerText = fullName || 'TechGebeya Member';
+        document.getElementById('user-handle').innerText = user.username ? `@${user.username}` : 'No Telegram Handle';
+        document.getElementById('user-id').innerText = user.id;
+        document.getElementById('user-lang').innerText = (user.language_code || 'en').toUpperCase();
+
+        if (user.photo_url) {
+          const avatarImg = document.getElementById('user-avatar');
+          avatarImg.src = user.photo_url;
+          avatarImg.style.display = 'block';
+          document.getElementById('user-initial').style.display = 'none';
+        } else {
+          document.getElementById('user-initial').innerText = (user.first_name || 'T').charAt(0).toUpperCase();
+        }
+      } else {
+        document.getElementById('user-fullname').innerText = 'External Browser View';
+        document.getElementById('user-handle').innerText = 'Please launch via @TechGebeyaBot';
+      }
+
+      if (tg.initData) {
+        document.getElementById('raw-init-data').innerText = tg.initData;
+      }
+
+      // Configure Telegram Native Bottom Action Button
+      tg.MainButton.setText("START TRADING ON TECHGEBEYA");
+      tg.MainButton.show();
+      tg.MainButton.onClick(() => {
+        tg.HapticFeedback?.notificationOccurred('success');
+        tg.sendData(JSON.stringify({ action: "launch_catalog", userId: user?.id }));
+      });
+
+      document.getElementById('explore-btn').addEventListener('click', () => {
+        tg.HapticFeedback?.impactOccurred('medium');
+        alert(`Welcome to TechGebeya, ${user?.first_name || 'Buyer'}! Catalog loading...`);
+      });
+    }
+  </script>
+</body>
+</html>
