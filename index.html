@@ -9,15 +9,15 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    /* Native Telegram CSS Variables */
     :root {
       --bg-color: var(--tg-theme-bg-color, #ffffff);
       --text-color: var(--tg-theme-text-color, #1c1c1e);
       --hint-color: var(--tg-theme-hint-color, #8e8e93);
-      --link-color: var(--tg-theme-link-color, #007aff);
       --button-color: var(--tg-theme-button-color, #007aff);
       --button-text-color: var(--tg-theme-button-text-color, #ffffff);
       --secondary-bg-color: var(--tg-theme-secondary-bg-color, #f2f2f7);
+      --card-bg: var(--tg-theme-section-bg-color, #ffffff);
+      --success-color: #34c759;
     }
 
     * {
@@ -28,233 +28,291 @@
     }
 
     body {
-      background-color: var(--bg-color);
+      background-color: var(--secondary-bg-color);
       color: var(--text-color);
-      padding: 16px;
-      font-size: 15px;
-      line-height: 1.5;
-      min-height: 100vh;
+      padding: 12px;
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
+
+    .header {
+      background-color: var(--card-bg);
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
       display: flex;
-      flex-direction: column;
-      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .brand-header {
-      text-align: center;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .brand-title {
-      font-size: 22px;
+    .brand h1 {
+      font-size: 18px;
       font-weight: 800;
       color: var(--button-color);
-      letter-spacing: -0.5px;
     }
 
-    .brand-subtitle {
-      font-size: 13px;
-      color: var(--hint-color);
-      margin-top: 2px;
-    }
-
-    .badge {
-      display: inline-block;
-      background-color: rgba(52, 199, 89, 0.15);
-      color: #34c759;
+    .brand p {
       font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      margin-top: 6px;
+      color: var(--hint-color);
     }
 
-    .card {
-      background-color: var(--secondary-bg-color);
-      border-radius: 12px;
-      padding: 16px;
+    .user-pill {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--button-color);
+      padding: 6px 10px;
+      border-radius: 20px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: var(--text-color);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--button-color);
+      color: var(--button-text-color);
+      border-color: var(--button-color);
+    }
+
+    .grid {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-
-    .user-header {
-      display: flex;
-      align-items: center;
       gap: 12px;
     }
 
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background-color: var(--button-color);
-      color: var(--button-text-color);
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: bold;
+      gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .product-img {
+      width: 95px;
+      height: 95px;
+      border-radius: 8px;
       object-fit: cover;
+      background: #e5e5ea;
+      flex-shrink: 0;
     }
 
-    .user-info h2 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .user-info p {
-      font-size: 13px;
-      color: var(--hint-color);
-    }
-
-    .detail-row {
+    .product-details {
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      flex-grow: 1;
     }
 
-    .detail-row:last-child {
-      border-bottom: none;
+    .product-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
     }
 
-    .label {
-      color: var(--hint-color);
-      font-size: 13px;
-    }
-
-    .value {
-      font-weight: 500;
-      font-size: 13px;
-      word-break: break-all;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background-color: var(--button-color);
-      color: var(--button-text-color);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-    }
-
-    .btn:active {
-      opacity: 0.85;
-    }
-
-    .raw-data {
-      font-family: monospace;
+    .product-specs {
       font-size: 11px;
       color: var(--hint-color);
-      background: rgba(0, 0, 0, 0.04);
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 90px;
-      overflow-y: auto;
-      word-break: break-all;
+      margin-top: 4px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .tag-verified {
+      background: rgba(52, 199, 89, 0.15);
+      color: var(--success-color);
+    }
+
+    .tag-condition {
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--button-color);
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .price {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-color);
+    }
+
+    .buy-btn {
+      background: var(--button-color);
+      color: var(--button-text-color);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- TechGebeya Branding Header -->
-  <div class="brand-header">
-    <div class="brand-title">TechGebeya ቴክ ገበያ</div>
-    <div class="brand-subtitle">Verified Secondhand Electronics & Escrow Trading</div>
-    <div class="badge">✓ Kebele ID & IMEI Protection Active</div>
-  </div>
-
-  <!-- User Account Profile Card -->
-  <div class="card">
-    <div class="user-header">
-      <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
-      <div id="user-initial" class="avatar">?</div>
-      <div class="user-info">
-        <h2 id="user-fullname">Loading TechGebeya Profile...</h2>
-        <p id="user-handle">@username</p>
-      </div>
+  <!-- Top Header Bar -->
+  <div class="header">
+    <div class="brand">
+      <h1>TechGebeya ቴክ ገበያ</h1>
+      <p>Escrow-Protected Tech Resale</p>
     </div>
-
-    <div style="margin-top: 6px;">
-      <div class="detail-row">
-        <span class="label">Telegram ID</span>
-        <span id="user-id" class="value">-</span>
-      </div>
-      <div class="detail-row">
-        <span class="label">Language</span>
-        <span id="user-lang" class="value">-</span>
-      </div>
-      <div class="detail-row">
-        <span class="label">Account Security</span>
-        <span class="value" style="color: #34c759;">Verified Session</span>
-      </div>
-    </div>
+    <div class="user-pill" id="user-greeting">Guest</div>
   </div>
 
-  <!-- Marketplace Quick Actions -->
-  <div class="card">
-    <button class="btn" id="explore-btn">Browse TechGebeya Catalog</button>
+  <!-- Category Selection -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCategory('all', this)">All Items</button>
+    <button class="filter-btn" onclick="filterCategory('laptop', this)">💻 Laptops</button>
+    <button class="filter-btn" onclick="filterCategory('phone', this)">📱 Phones</button>
+    <button class="filter-btn" onclick="filterCategory('camera', this)">📷 Cameras</button>
   </div>
 
-  <!-- Telebirr Security Data Box -->
-  <div class="card">
-    <span class="label">Session Signature (initData Hash for Telebirr Escrow):</span>
-    <div class="raw-data" id="raw-init-data">No active session (Open inside Telegram)</div>
-  </div>
+  <!-- Item Catalog Grid -->
+  <div class="grid" id="catalog-grid"></div>
 
   <script>
-    // Initialize Telegram WebApp SDK
     const tg = window.Telegram?.WebApp;
-
     if (tg) {
       tg.ready();
       tg.expand();
 
-      // Retrieve Telegram User Object
       const user = tg.initDataUnsafe?.user;
-
       if (user) {
-        const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
-        document.getElementById('user-fullname').innerText = fullName || 'TechGebeya Member';
-        document.getElementById('user-handle').innerText = user.username ? `@${user.username}` : 'No Telegram Handle';
-        document.getElementById('user-id').innerText = user.id;
-        document.getElementById('user-lang').innerText = (user.language_code || 'en').toUpperCase();
-
-        if (user.photo_url) {
-          const avatarImg = document.getElementById('user-avatar');
-          avatarImg.src = user.photo_url;
-          avatarImg.style.display = 'block';
-          document.getElementById('user-initial').style.display = 'none';
-        } else {
-          document.getElementById('user-initial').innerText = (user.first_name || 'T').charAt(0).toUpperCase();
-        }
-      } else {
-        document.getElementById('user-fullname').innerText = 'External Browser View';
-        document.getElementById('user-handle').innerText = 'Please launch via @TechGebeyaBot';
+        document.getElementById('user-greeting').innerText = `@${user.username || user.first_name}`;
       }
+    }
 
-      if (tg.initData) {
-        document.getElementById('raw-init-data').innerText = tg.initData;
+    const products = [
+      {
+        id: "TG-101",
+        title: "MacBook Air M1 (2020)",
+        category: "laptop",
+        specs: "8GB RAM | 256GB SSD | Battery 88%",
+        condition: "9/10 Condition",
+        price: "65,000 ETB",
+        img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=300&q=80"
+      },
+      {
+        id: "TG-102",
+        title: "iPhone 13 Pro (128GB)",
+        category: "phone",
+        specs: "Sierra Blue | Battery 86% | Factory Unlocked",
+        condition: "8.5/10 Condition",
+        price: "52,000 ETB",
+        img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=300&q=80"
+      },
+      {
+        id: "TG-103",
+        title: "Sony Alpha A6400 Mirrorless",
+        category: "camera",
+        specs: "Body + 16-50mm Lens | Shutter Count 4.2k",
+        condition: "9.5/10 Condition",
+        price: "78,000 ETB",
+        img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=300&q=80"
+      },
+      {
+        id: "TG-104",
+        title: "Dell XPS 13 (i7 11th Gen)",
+        category: "laptop",
+        specs: "16GB RAM | 512GB SSD | 4K Touch Display",
+        condition: "8/10 Condition",
+        price: "58,000 ETB",
+        img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=300&q=80"
       }
+    ];
 
-      // Configure Telegram Native Bottom Action Button
-      tg.MainButton.setText("START TRADING ON TECHGEBEYA");
-      tg.MainButton.show();
-      tg.MainButton.onClick(() => {
-        tg.HapticFeedback?.notificationOccurred('success');
-        tg.sendData(JSON.stringify({ action: "launch_catalog", userId: user?.id }));
-      });
+    function renderProducts(items) {
+      const container = document.getElementById('catalog-grid');
+      container.innerHTML = '';
 
-      document.getElementById('explore-btn').addEventListener('click', () => {
-        tg.HapticFeedback?.impactOccurred('medium');
-        alert(`Welcome to TechGebeya, ${user?.first_name || 'Buyer'}! Catalog loading...`);
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${item.img}" class="product-img" alt="${item.title}" />
+          <div class="product-details">
+            <div>
+              <div class="product-title">${item.title}</div>
+              <div class="product-specs">${item.specs}</div>
+              <div class="badges">
+                <span class="tag tag-verified">✓ Kebele ID Verified</span>
+                <span class="tag tag-condition">${item.condition}</span>
+              </div>
+            </div>
+            <div class="price-row">
+              <div class="price">${item.price}</div>
+              <button class="buy-btn" onclick="requestEscrow('${item.id}', '${item.title}', '${item.price}')">Buy via Escrow</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
       });
     }
+
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (cat === 'all') {
+        renderProducts(products);
+      } else {
+        renderProducts(products.filter(p => p.category === cat));
+      }
+    }
+
+    function requestEscrow(itemId, title, price) {
+      tg?.HapticFeedback?.notificationOccurred('success');
+      tg?.showPopup({
+        title: "Initiate Telebirr Escrow",
+        message: `Reserve ${title} for ${price}?\n\nFunds will be held securely in TechGebeya Escrow until you inspect the device.`,
+        buttons: [
+          { id: "pay", type: "default", text: "Proceed to Telebirr" },
+          { type: "cancel" }
+        ]
+      }, (buttonId) => {
+        if (buttonId === 'pay') {
+          tg?.sendData(JSON.stringify({ action: "escrow_checkout", itemId: itemId }));
+        }
+      });
+    }
+
+    renderProducts(products);
   </script>
 </body>
 </html>
