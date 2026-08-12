@@ -422,7 +422,7 @@
   <div class="header">
     <div class="brand-info">
       <h1>TechGebeya ቴክ ገበያ</h1>
-      <p>Laptops & Phones Only • Admin: @techgebeya2</p>
+      <p>Laptops & Phones Only • Admin: @techgebeya3</p>
     </div>
     <div class="user-profile">
       <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
@@ -525,12 +525,12 @@
           <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem" required></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Submit Escrow Order to @techgebeya2</button>
+        <button type="submit" class="btn-submit">Submit Escrow Order to @techgebeya3</button>
       </form>
     </div>
   </div>
 
-  <!-- Sell Device Modal (Submits directly to Admin @techgebeya2) -->
+  <!-- Sell Device Modal (Submits directly to Admin @techgebeya3) -->
   <div class="modal-overlay" id="sell-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -602,13 +602,13 @@
           <label for="sell-verify">I agree to present Kebele ID & verify IMEI/Serial upon inspection.</label>
         </div>
 
-        <button type="submit" class="btn-submit">Submit Listing for Review to @techgebeya2</button>
+        <button type="submit" class="btn-submit">Submit Listing for Review to @techgebeya3</button>
       </form>
     </div>
   </div>
 
   <script>
-    const ADMIN_USERNAME = "techgebeya2";
+    const ADMIN_USERNAME = "techgebeya3";
     const tg = window.Telegram?.WebApp;
     let uploadedImageBase64 = "";
 
@@ -651,7 +651,7 @@
         box: true,
         price: 115000,
         phone: "0911223344",
-        seller: "@techgebeya2 (Verified Hub)",
+        seller: "@techgebeya3 (Verified Hub)",
         img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=400&q=80"
       },
       {
@@ -664,7 +664,7 @@
         box: true,
         price: 78000,
         phone: "0922114455",
-        seller: "@techgebeya2 (Verified Hub)",
+        seller: "@techgebeya3 (Verified Hub)",
         img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=400&q=80"
       }
     ];
@@ -720,7 +720,7 @@
               <div class="product-title">${p.title}</div>
               <div class="product-specs">${specsSummary}</div>
               <div class="badges">
-                <span class="badge badge-verified">✓ Verified by @techgebeya2</span>
+                <span class="badge badge-verified">✓ Verified by @techgebeya3</span>
               </div>
             </div>
             <div class="price-row">
@@ -796,12 +796,19 @@
                           `*Phone:* ${encodeURIComponent(buyerPhone)}%0A` +
                           `*Address:* ${encodeURIComponent(buyerAddress)}`;
 
-      window.open(`https://t.me/${ADMIN_USERNAME}?text=${textMessage}`, '_blank');
+      const targetUrl = `https://t.me/${ADMIN_USERNAME}?text=${textMessage}`;
+      
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(targetUrl);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+
       closeModal('buy-modal');
       document.getElementById('buy-form').reset();
     }
 
-    // Handles user listing submission and sends details directly to @techgebeya2
+    // Handles user listing submission and sends details directly to @techgebeya3
     function handleSellSubmit(event) {
       event.preventDefault();
 
@@ -830,13 +837,11 @@
         photoBase64: uploadedImageBase64
       };
 
-      // 1. Send data directly through Telegram Mini App WebApp channel
       if (tg) {
         tg.sendData(JSON.stringify(payload));
         tg.HapticFeedback?.notificationOccurred('success');
       }
 
-      // 2. Open direct chat window with @techgebeya2 containing formatted listing details
       const directMsg = `📥 *New Listing Request for Approval*%0A%0A` +
                         `*Category:* ${encodeURIComponent(category.toUpperCase())}%0A` +
                         `*Device:* ${encodeURIComponent(title)}%0A` +
@@ -848,7 +853,13 @@
                         `*Seller Handle:* ${encodeURIComponent(sellerHandle)}%0A%0A` +
                         `_(Note: Photo is attached in the Mini App payload)_`;
 
-      window.open(`https://t.me/${ADMIN_USERNAME}?text=${directMsg}`, '_blank');
+      const targetUrl = `https://t.me/${ADMIN_USERNAME}?text=${directMsg}`;
+
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(targetUrl);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
 
       closeModal('sell-modal');
       document.getElementById('sell-form').reset();
