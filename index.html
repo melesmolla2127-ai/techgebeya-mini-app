@@ -13,10 +13,9 @@
       --bg-color: var(--tg-theme-bg-color, #f4f4f7);
       --text-color: var(--tg-theme-text-color, #1c1c1e);
       --hint-color: var(--tg-theme-hint-color, #8e8e93);
-      --link-color: var(--tg-theme-link-color, #007aff);
       --button-color: var(--tg-theme-button-color, #007aff);
       --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-      --secondary-bg-color: var(--tg-theme-secondary-bg-color, #ffffff);
+      --secondary-bg: var(--tg-theme-secondary-bg-color, #ffffff);
       --section-bg: var(--tg-theme-section-bg-color, #ffffff);
       --success-color: #34c759;
       --border-color: rgba(0, 0, 0, 0.08);
@@ -54,7 +53,6 @@
       font-size: 18px;
       font-weight: 800;
       color: var(--button-color);
-      letter-spacing: -0.3px;
     }
 
     .brand-info p {
@@ -65,7 +63,7 @@
     .user-profile {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: var(--bg-color);
       padding: 4px 10px 4px 4px;
       border-radius: 20px;
@@ -101,7 +99,7 @@
       color: var(--hint-color);
     }
 
-    /* Sticky Search & Filters */
+    /* Search & Filters */
     .search-filter-container {
       background: var(--section-bg);
       padding: 12px 16px;
@@ -164,7 +162,7 @@
       border-color: var(--button-color);
     }
 
-    /* Product Grid / List */
+    /* Catalog */
     .catalog {
       padding: 12px 16px;
       display: flex;
@@ -183,8 +181,8 @@
     }
 
     .product-thumb {
-      width: 100px;
-      height: 100px;
+      width: 95px;
+      height: 95px;
       border-radius: 8px;
       object-fit: cover;
       background: #e5e5ea;
@@ -199,13 +197,13 @@
     }
 
     .product-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       line-height: 1.2;
     }
 
     .product-specs {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--hint-color);
       margin-top: 3px;
     }
@@ -257,7 +255,7 @@
       cursor: pointer;
     }
 
-    /* Floating Action Button (FAB) */
+    /* FAB */
     .fab {
       position: fixed;
       bottom: 20px;
@@ -277,7 +275,7 @@
       z-index: 20;
     }
 
-    /* Modal Backdrop & Sheets */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -334,7 +332,7 @@
       cursor: pointer;
     }
 
-    /* Detail View Content */
+    /* Detail View */
     .detail-img {
       width: 100%;
       height: 200px;
@@ -357,7 +355,7 @@
       font-weight: 600;
     }
 
-    /* Sell Form */
+    /* Forms */
     .form-group {
       margin-bottom: 12px;
     }
@@ -409,11 +407,11 @@
 </head>
 <body>
 
-  <!-- Top Header with Telegram Profile -->
+  <!-- Top Header -->
   <div class="header">
     <div class="brand-info">
       <h1>TechGebeya ቴክ ገበያ</h1>
-      <p>Verified Escrow Electronics</p>
+      <p>Escrow Manager: @brook_97</p>
     </div>
     <div class="user-profile">
       <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
@@ -425,7 +423,7 @@
     </div>
   </div>
 
-  <!-- Sticky Search & Filter Navigation -->
+  <!-- Search & Category Bar -->
   <div class="search-filter-container">
     <div class="search-box">
       <span class="search-icon">🔍</span>
@@ -439,11 +437,11 @@
     </div>
   </div>
 
-  <!-- Main Catalog Grid -->
+  <!-- Catalog Grid -->
   <div class="catalog" id="catalog-list"></div>
 
-  <!-- Floating Action Button -->
-  <button class="fab" onclick="openSellModal()">
+  <!-- FAB -->
+  <button class="fab" onclick="openModal('sell-modal')">
     <span>+</span> Sell Device
   </button>
 
@@ -462,25 +460,62 @@
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Hardware Specifications</div>
+        <div class="detail-label">Specifications</div>
         <div class="detail-val" id="detail-specs">-</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Verification & Health</div>
+        <div class="detail-label">Condition & Health</div>
         <div class="detail-val" id="detail-health">-</div>
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Seller Contact</div>
+        <div class="detail-label">Seller Phone / Handle</div>
         <div class="detail-val" id="detail-seller">-</div>
       </div>
 
-      <button class="btn-submit" id="detail-escrow-btn" style="margin-top:10px;">Initiate Telebirr Escrow</button>
+      <button class="btn-submit" id="detail-buy-btn">Buy via Escrow</button>
     </div>
   </div>
 
-  <!-- Sell Device Modal -->
+  <!-- Buy Device Modal (Collects Buyer Info) -->
+  <div class="modal-overlay" id="buy-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Complete Purchase</div>
+        <button class="close-btn" onclick="closeModal('buy-modal')">✕</button>
+      </div>
+      <form id="buy-form" onsubmit="handleBuySubmit(event)">
+        <input type="hidden" id="buy-item-id" />
+        <input type="hidden" id="buy-item-title" />
+        <input type="hidden" id="buy-item-price" />
+
+        <div class="form-group">
+          <label>Selected Device</label>
+          <input type="text" id="buy-summary" class="form-control" readonly style="font-weight:bold; background:var(--border-color);" />
+        </div>
+
+        <div class="form-group">
+          <label>Your Full Name</label>
+          <input type="text" id="buy-fullname" class="form-control" placeholder="e.g. Meles Molla" required />
+        </div>
+
+        <div class="form-group">
+          <label>Your Phone Number</label>
+          <input type="tel" id="buy-phone" class="form-control" placeholder="e.g. 0911234567" required />
+        </div>
+
+        <div class="form-group">
+          <label>Your Delivery / Inspection Address</label>
+          <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem, Near Edna Mall" required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Confirm Order to @brook_97</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sell Device Modal (Collects Photo & Phone Number) -->
   <div class="modal-overlay" id="sell-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -503,8 +538,8 @@
         </div>
 
         <div class="form-group">
-          <label>Specs & Hardware Info</label>
-          <input type="text" id="sell-specs" class="form-control" placeholder="e.g. 16GB RAM, 512GB SSD, Battery 89%" required />
+          <label>Hardware Specifications</label>
+          <input type="text" id="sell-specs" class="form-control" placeholder="e.g. 16GB RAM, 512GB SSD" required />
         </div>
 
         <div class="form-group">
@@ -513,34 +548,45 @@
         </div>
 
         <div class="form-group">
-          <label>Price (ETB)</label>
+          <label>Asking Price (ETB)</label>
           <input type="number" id="sell-price" class="form-control" placeholder="e.g. 65000" required />
+        </div>
+
+        <div class="form-group">
+          <label>Seller Phone Number</label>
+          <input type="tel" id="sell-phone" class="form-control" placeholder="e.g. 0912345678" required />
+        </div>
+
+        <div class="form-group">
+          <label>Device Photo Link (URL)</label>
+          <input type="url" id="sell-photo" class="form-control" placeholder="e.g. https://images.unsplash.com/..." required />
         </div>
 
         <div class="checkbox-group">
           <input type="checkbox" id="sell-verify" required />
-          <label for="sell-verify">I agree to verify my Kebele ID & Device IMEI at inspection.</label>
+          <label for="sell-verify">I agree to present Kebele ID & verify IMEI upon sale.</label>
         </div>
 
-        <button type="submit" class="btn-submit">Submit Listing for Escrow</button>
+        <button type="submit" class="btn-submit">Publish Listing to Marketplace</button>
       </form>
     </div>
   </div>
 
   <script>
-    // Initialize Telegram WebApp SDK
+    const ADMIN_USERNAME = "@brook_97";
     const tg = window.Telegram?.WebApp;
+    
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    // Load Telegram User Info into Header
+    // Set User Info
     const user = tg?.initDataUnsafe?.user;
     if (user) {
-      const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
-      document.getElementById('user-name').innerText = name || 'TechGebeya Member';
-      document.getElementById('user-username').innerText = user.username ? `@${user.username}` : 'Verified Trader';
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+      document.getElementById('user-name').innerText = fullName || 'TechGebeya Member';
+      document.getElementById('user-username').innerText = user.username ? `@${user.username}` : 'Verified User';
       
       if (user.photo_url) {
         const avatarImg = document.getElementById('user-avatar');
@@ -548,14 +594,17 @@
         avatarImg.style.display = 'block';
         document.getElementById('user-avatar-placeholder').style.display = 'none';
       } else {
-        document.getElementById('user-avatar-placeholder').innerText = (user.first_name || 'T').charAt(0).toUpperCase();
+        document.getElementById('user-avatar-placeholder').innerText = (user.first_name || 'U').charAt(0).toUpperCase();
       }
+
+      // Pre-fill Buyer Name
+      document.getElementById('buy-fullname').value = fullName;
     } else {
-      document.getElementById('user-name').innerText = 'Browser Preview';
+      document.getElementById('user-name').innerText = 'Browser Guest';
       document.getElementById('user-username').innerText = '@guest';
     }
 
-    // Initial Marketplace Inventory
+    // Inventory Data
     let products = [
       {
         id: "TG-101",
@@ -563,54 +612,41 @@
         category: "laptop",
         specs: "8GB RAM | 256GB SSD | Apple Silicon",
         condition: "9/10 Condition",
-        battery: "Battery Health 88% (Normal Cycle)",
+        battery: "Battery Health 88%",
         price: 65000,
-        seller: "@meles_tech (Bole SafeHub)",
-        verified: true,
+        phone: "0911002233",
+        seller: "@brook_97 (Bole SafeHub)",
         img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "TG-102",
         title: "iPhone 13 Pro (128GB)",
         category: "phone",
-        specs: "Sierra Blue | Factory Unlocked | Triple Camera",
+        specs: "Sierra Blue | Factory Unlocked",
         condition: "8.5/10 Condition",
-        battery: "Battery 86% | IMEI Checked ✓",
+        battery: "Battery 86% | IMEI Verified",
         price: 52000,
+        phone: "0922114455",
         seller: "@kal_mobiles (Kazanchis)",
-        verified: true,
         img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=400&q=80"
       },
       {
         id: "TG-103",
         title: "Sony Alpha A6400 Mirrorless",
         category: "camera",
-        specs: "Body + 16-50mm Power Zoom Lens | 4K Video",
+        specs: "Body + 16-50mm Lens | 4K Video",
         condition: "9.5/10 Condition",
-        battery: "Shutter Count 4,200 | Clean Sensor",
+        battery: "Shutter Count 4,200",
         price: 78000,
+        phone: "0933445566",
         seller: "@eyasu_gear (Piassa)",
-        verified: true,
         img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=80"
-      },
-      {
-        id: "TG-104",
-        title: "Dell XPS 13 (i7 11th Gen)",
-        category: "laptop",
-        specs: "16GB RAM | 512GB NVMe | 4K Touch Screen",
-        condition: "8/10 Condition",
-        battery: "Battery 82% | Original Charger Included",
-        price: 58000,
-        seller: "@emran_electronics (4 Kilo)",
-        verified: true,
-        img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80"
       }
     ];
 
     let currentCategory = 'all';
     let searchQuery = '';
 
-    // Render Product Cards
     function renderCatalog() {
       const container = document.getElementById('catalog-list');
       container.innerHTML = '';
@@ -623,7 +659,7 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state">No secondhand items found matching your filter.</div>`;
+        container.innerHTML = `<div class="empty-state">No secondhand tech items found matching your query.</div>`;
         return;
       }
 
@@ -649,7 +685,7 @@
             </div>
             <div class="price-row">
               <div class="price">${p.price.toLocaleString()} ETB</div>
-              <button class="escrow-btn" onclick="triggerEscrow('${p.id}', '${p.title}', ${p.price})">Buy via Escrow</button>
+              <button class="escrow-btn" onclick="openBuyModal('${p.id}', '${p.title}', ${p.price})">Buy via Escrow</button>
             </div>
           </div>
         `;
@@ -657,7 +693,6 @@
       });
     }
 
-    // Filter Handlers
     function setCategory(category, element) {
       document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
       element.classList.add('active');
@@ -670,7 +705,9 @@
       renderCatalog();
     });
 
-    // Detail Modal Control
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
     function openDetailModal(id) {
       const p = products.find(item => item.id === id);
       if (!p) return;
@@ -680,58 +717,62 @@
       document.getElementById('detail-price').innerText = `${p.price.toLocaleString()} ETB`;
       document.getElementById('detail-specs').innerText = p.specs;
       document.getElementById('detail-health').innerText = `${p.condition} • ${p.battery}`;
-      document.getElementById('detail-seller').innerText = p.seller;
+      document.getElementById('detail-seller').innerText = `${p.seller} (Phone: ${p.phone})`;
 
-      const escrowBtn = document.getElementById('detail-escrow-btn');
-      escrowBtn.onclick = () => {
+      const buyBtn = document.getElementById('detail-buy-btn');
+      buyBtn.onclick = () => {
         closeModal('detail-modal');
-        triggerEscrow(p.id, p.title, p.price);
+        openBuyModal(p.id, p.title, p.price);
       };
 
-      document.getElementById('detail-modal').classList.add('active');
+      openModal('detail-modal');
     }
 
-    // Sell Modal Control
-    function openSellModal() {
-      document.getElementById('sell-modal').classList.add('active');
+    // Buy Modal Handler
+    function openBuyModal(id, title, price) {
+      document.getElementById('buy-item-id').value = id;
+      document.getElementById('buy-item-title').value = title;
+      document.getElementById('buy-item-price').value = price;
+      document.getElementById('buy-summary').value = `${title} - ${price.toLocaleString()} ETB`;
+      openModal('buy-modal');
     }
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
+    function handleBuySubmit(event) {
+      event.preventDefault();
 
-    // Telebirr Escrow Flow
-    function triggerEscrow(id, title, price) {
+      const orderData = {
+        action: "buy_device_request",
+        adminTarget: ADMIN_USERNAME,
+        itemId: document.getElementById('buy-item-id').value,
+        itemTitle: document.getElementById('buy-item-title').value,
+        itemPrice: document.getElementById('buy-item-price').value + " ETB",
+        buyerName: document.getElementById('buy-fullname').value,
+        buyerPhone: document.getElementById('buy-phone').value,
+        buyerAddress: document.getElementById('buy-address').value,
+        buyerTelegramHandle: user?.username ? `@${user.username}` : "Not Set"
+      };
+
       tg?.HapticFeedback?.notificationOccurred('success');
-      
-      const message = `Reserve "${title}" for ${price.toLocaleString()} ETB?\n\n` +
-                      `Funds will be held in TechGebeya Telebirr Escrow until you inspect the device in person.`;
 
-      if (tg?.showPopup) {
-        tg.showPopup({
-          title: "Telebirr Escrow Protection",
-          message: message,
-          buttons: [
-            { id: "confirm", type: "default", text: "Proceed to Telebirr" },
-            { type: "cancel" }
-          ]
-        }, (buttonId) => {
-          if (buttonId === 'confirm') {
-            tg.sendData(JSON.stringify({
-              action: "initiate_escrow",
-              itemId: id,
-              itemTitle: title,
-              price: price,
-              buyerId: user?.id || "guest"
-            }));
-          }
-        });
-      } else {
-        alert(`[Telebirr Escrow Simulation]\n\nReserving: ${title}\nAmount: ${price.toLocaleString()} ETB`);
-      }
+      // Send JSON to Telegram Bot
+      tg?.sendData(JSON.stringify(orderData));
+
+      // Construct Direct Telegram Order Message to @brook_97
+      const textMessage = `🛒 *New TechGebeya Buy Order*%0A%0A` +
+                          `*Device:* ${orderData.itemTitle}%0A` +
+                          `*Price:* ${orderData.itemPrice}%0A` +
+                          `*Buyer Name:* ${orderData.buyerName}%0A` +
+                          `*Phone:* ${orderData.buyerPhone}%0A` +
+                          `*Address:* ${orderData.buyerAddress}%0A` +
+                          `*Telegram:* ${orderData.buyerTelegramHandle}`;
+
+      window.open(`https://t.me/brook_97?text=${textMessage}`, '_blank');
+
+      closeModal('buy-modal');
+      document.getElementById('buy-form').reset();
     }
 
-    // Handle New Product Submission
+    // Sell Form Submission Handler
     function handleSellSubmit(event) {
       event.preventDefault();
 
@@ -741,11 +782,11 @@
         category: document.getElementById('sell-category').value,
         specs: document.getElementById('sell-specs').value,
         condition: `${document.getElementById('sell-condition').value}/10 Condition`,
-        battery: "IMEI & Kebele Verified",
+        battery: "Kebele & IMEI Agreed",
         price: parseInt(document.getElementById('sell-price').value),
-        seller: user?.username ? `@${user.username}` : 'Community Member',
-        verified: true,
-        img: "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=400&q=80"
+        phone: document.getElementById('sell-phone').value,
+        seller: user?.username ? `@${user.username}` : 'Community Seller',
+        img: document.getElementById('sell-photo').value
       };
 
       products.unshift(newProduct);
@@ -755,14 +796,13 @@
 
       tg?.HapticFeedback?.notificationOccurred('success');
 
-      // Send payload back to Telegram Bot
       tg?.sendData(JSON.stringify({
-        action: "new_listing_created",
+        action: "new_device_listed",
+        adminTarget: ADMIN_USERNAME,
         item: newProduct
       }));
     }
 
-    // Initial Load
     renderCatalog();
   </script>
 </body>
