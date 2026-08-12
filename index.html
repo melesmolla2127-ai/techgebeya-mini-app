@@ -227,11 +227,6 @@
       color: var(--success-color);
     }
 
-    .badge-condition {
-      background: rgba(0, 122, 255, 0.1);
-      color: var(--button-color);
-    }
-
     .price-row {
       display: flex;
       justify-content: space-between;
@@ -355,7 +350,7 @@
       font-weight: 600;
     }
 
-    /* Extended Forms */
+    /* Form Controls */
     .form-row {
       display: flex;
       gap: 10px;
@@ -390,6 +385,16 @@
       gap: 8px;
       margin: 10px 0;
       font-size: 12px;
+    }
+
+    .photo-preview {
+      display: none;
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
 
     .btn-submit {
@@ -429,7 +434,7 @@
     </div>
   </div>
 
-  <!-- Search & Category Bar (Laptops & Phones Only) -->
+  <!-- Search & Category Bar -->
   <div class="search-filter-container">
     <div class="search-box">
       <span class="search-icon">🔍</span>
@@ -470,7 +475,7 @@
       </div>
 
       <div class="detail-section">
-        <div class="detail-label">Battery & Condition</div>
+        <div class="detail-label">Battery Status</div>
         <div class="detail-val" id="detail-health">-</div>
       </div>
 
@@ -517,7 +522,7 @@
 
         <div class="form-group">
           <label>Your Delivery / Inspection Address</label>
-          <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem, Near Edna Mall" required></textarea>
+          <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem" required></textarea>
         </div>
 
         <button type="submit" class="btn-submit">Submit Escrow Order to @brook_97</button>
@@ -525,7 +530,7 @@
     </div>
   </div>
 
-  <!-- Extended Sell Device Modal (Featured Form for Laptop/Phone & Photos) -->
+  <!-- Sell Device Modal (No Condition Score, No Color, File Attachment Enabled) -->
   <div class="modal-overlay" id="sell-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -544,7 +549,7 @@
 
         <div class="form-group">
           <label>Brand & Exact Model</label>
-          <input type="text" id="sell-title" class="form-control" placeholder="e.g. iPhone 14 Pro Max / Dell XPS 15 9520" required />
+          <input type="text" id="sell-title" class="form-control" placeholder="e.g. iPhone 14 Pro Max / Dell XPS 15" required />
         </div>
 
         <div class="form-row">
@@ -564,17 +569,6 @@
             <input type="text" id="sell-battery" class="form-control" placeholder="e.g. 88% / Normal" required />
           </div>
           <div class="form-group">
-            <label>Color</label>
-            <input type="text" id="sell-color" class="form-control" placeholder="e.g. Space Gray, Deep Purple" required />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Condition Score (1-10)</label>
-            <input type="number" id="sell-condition" class="form-control" min="1" max="10" placeholder="e.g. 9" required />
-          </div>
-          <div class="form-group">
             <label>Asking Price (ETB)</label>
             <input type="number" id="sell-price" class="form-control" placeholder="e.g. 65000" required />
           </div>
@@ -585,10 +579,18 @@
           <input type="tel" id="sell-phone" class="form-control" placeholder="e.g. 0911234567" required />
         </div>
 
+        <!-- Direct File Upload Field -->
         <div class="form-group">
-          <label>Device Photo Link (Image URL)</label>
-          <input type="url" id="sell-photo" class="form-control" placeholder="e.g. https://images.unsplash.com/photo-..." required />
-          <span style="font-size:10px; color:var(--hint-color);">Paste a direct photo URL of your laptop/phone.</span>
+          <label>Attach Photo (Upload from Phone Gallery / Camera)</label>
+          <input 
+            type="file" 
+            id="sell-photo-input" 
+            class="form-control" 
+            accept="image/*" 
+            onchange="handlePhotoUpload(event)" 
+            required 
+          />
+          <img id="photo-preview" class="photo-preview" alt="Device Preview" />
         </div>
 
         <div class="checkbox-group">
@@ -609,6 +611,7 @@
   <script>
     const ADMIN_USERNAME = "brook_97";
     const tg = window.Telegram?.WebApp;
+    let uploadedImageBase64 = "";
     
     if (tg) {
       tg.ready();
@@ -637,7 +640,7 @@
       document.getElementById('user-username').innerText = '@guest';
     }
 
-    // Sample Inventory Data (Laptops & Phones Only)
+    // Initial Inventory
     let products = [
       {
         id: "TG-101",
@@ -646,9 +649,7 @@
         ram: "16GB",
         storage: "512GB NVMe SSD",
         battery: "Battery Health 91%",
-        color: "Space Gray",
         box: true,
-        condition: "9.5/10 Condition",
         price: 115000,
         phone: "0911223344",
         seller: "@brook_97 (Bole SafeHub)",
@@ -661,9 +662,7 @@
         ram: "6GB",
         storage: "256GB",
         battery: "Battery Health 89%",
-        color: "Deep Purple",
         box: true,
-        condition: "9/10 Condition",
         price: 78000,
         phone: "0922114455",
         seller: "@kal_mobiles (Kazanchis)",
@@ -676,33 +675,31 @@
         ram: "16GB",
         storage: "512GB SSD",
         battery: "Battery Health 85%",
-        color: "Platinum Silver",
         box: false,
-        condition: "8.5/10 Condition",
         price: 58000,
         phone: "0933445566",
         seller: "@eyasu_gear (Piassa)",
         img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80"
-      },
-      {
-        id: "TG-104",
-        title: "Samsung Galaxy S23 Ultra (512GB)",
-        category: "phone",
-        ram: "12GB",
-        storage: "512GB",
-        battery: "Battery Health 96%",
-        color: "Phantom Black",
-        box: true,
-        condition: "9.8/10 Condition",
-        price: 72000,
-        phone: "0944556677",
-        seller: "@emran_tech (4 Kilo)",
-        img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=400&q=80"
       }
     ];
 
     let currentCategory = 'all';
     let searchQuery = '';
+
+    // Convert Selected Image File to Base64 String
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedImageBase64 = e.target.result;
+          const previewImg = document.getElementById('photo-preview');
+          previewImg.src = uploadedImageBase64;
+          previewImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
     function renderCatalog() {
       const container = document.getElementById('catalog-list');
@@ -711,7 +708,7 @@
       const filtered = products.filter(p => {
         const matchesCategory = (currentCategory === 'all' || p.category === currentCategory);
         const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              `${p.ram} ${p.storage} ${p.color}`.toLowerCase().includes(searchQuery.toLowerCase());
+                              `${p.ram} ${p.storage}`.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
       });
 
@@ -729,7 +726,7 @@
           }
         };
 
-        const specsSummary = `${p.ram} RAM | ${p.storage} | ${p.color}`;
+        const specsSummary = `${p.ram} RAM | ${p.storage}`;
 
         card.innerHTML = `
           <img src="${p.img}" class="product-thumb" alt="${p.title}" />
@@ -739,7 +736,6 @@
               <div class="product-specs">${specsSummary}</div>
               <div class="badges">
                 <span class="badge badge-verified">✓ IMEI/Kebele Verified</span>
-                <span class="badge badge-condition">${p.condition}</span>
               </div>
             </div>
             <div class="price-row">
@@ -774,8 +770,8 @@
       document.getElementById('detail-title').innerText = p.title;
       document.getElementById('detail-img').src = p.img;
       document.getElementById('detail-price').innerText = `${p.price.toLocaleString()} ETB`;
-      document.getElementById('detail-specs').innerText = `RAM: ${p.ram} • Storage: ${p.storage} • Color: ${p.color}`;
-      document.getElementById('detail-health').innerText = `${p.condition} • ${p.battery}`;
+      document.getElementById('detail-specs').innerText = `RAM: ${p.ram} • Storage: ${p.storage}`;
+      document.getElementById('detail-health').innerText = p.battery;
       document.getElementById('detail-extras').innerText = p.box ? "Original Box & Charger Included ✓" : "Device Only (Charger Included)";
       document.getElementById('detail-seller').innerText = `${p.seller} (Phone: ${p.phone})`;
 
@@ -788,7 +784,6 @@
       openModal('detail-modal');
     }
 
-    // Buy Modal Handler
     function openBuyModal(id, title, price) {
       document.getElementById('buy-item-id').value = id;
       document.getElementById('buy-item-title').value = title;
@@ -820,11 +815,8 @@
       };
 
       tg?.HapticFeedback?.notificationOccurred('success');
-
-      // Send JSON data to Telegram Bot Backend
       tg?.sendData(JSON.stringify(orderData));
 
-      // Construct Direct Telegram Message Link to @brook_97
       const textMessage = `🛒 *New TechGebeya Buy Order*%0A%0A` +
                           `*Device:* ${encodeURIComponent(itemTitle)}%0A` +
                           `*Price:* ${encodeURIComponent(itemPrice)}%0A` +
@@ -839,20 +831,21 @@
       document.getElementById('buy-form').reset();
     }
 
-    // Sell Form Submission Handler (Featured Form)
     function handleSellSubmit(event) {
       event.preventDefault();
+
+      if (!uploadedImageBase64) {
+        alert("Please select a photo for your device.");
+        return;
+      }
 
       const category = document.getElementById('sell-category').value;
       const title = document.getElementById('sell-title').value;
       const ram = document.getElementById('sell-ram').value;
       const storage = document.getElementById('sell-storage').value;
       const battery = document.getElementById('sell-battery').value;
-      const color = document.getElementById('sell-color').value;
-      const conditionNum = document.getElementById('sell-condition').value;
       const price = parseInt(document.getElementById('sell-price').value);
       const phone = document.getElementById('sell-phone').value;
-      const photo = document.getElementById('sell-photo').value;
       const box = document.getElementById('sell-box').checked;
 
       const newProduct = {
@@ -862,19 +855,21 @@
         ram: ram,
         storage: storage,
         battery: `Battery ${battery}`,
-        color: color,
         box: box,
-        condition: `${conditionNum}/10 Condition`,
         price: price,
         phone: phone,
         seller: user?.username ? `@${user.username}` : 'Community Seller',
-        img: photo
+        img: uploadedImageBase64
       };
 
       products.unshift(newProduct);
       renderCatalog();
       closeModal('sell-modal');
+      
+      // Clear Form & Photo Preview
       document.getElementById('sell-form').reset();
+      document.getElementById('photo-preview').style.display = 'none';
+      uploadedImageBase64 = "";
 
       tg?.HapticFeedback?.notificationOccurred('success');
 
