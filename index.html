@@ -777,7 +777,7 @@
       openModal('buy-modal');
     }
 
-    // Robust handler for Buy Orders with multi-fallback redirection
+    // 100% Reliable Clipboard Copy + Chat Open for Escrow Buy
     function handleBuySubmit(event) {
       event.preventDefault();
 
@@ -792,30 +792,32 @@
         tg.HapticFeedback.notificationOccurred('success');
       }
 
-      const textMessage = `🛒 *New TechGebeya Purchase Request*%0A%0A` +
-                          `*Device:* ${encodeURIComponent(itemTitle)}%0A` +
-                          `*Price:* ${encodeURIComponent(itemPrice)}%0A` +
-                          `*Buyer:* ${encodeURIComponent(buyerName)} (${encodeURIComponent(buyerTelegramHandle)})%0A` +
-                          `*Phone:* ${encodeURIComponent(buyerPhone)}%0A` +
-                          `*Address:* ${encodeURIComponent(buyerAddress)}`;
+      const textMessage = `🛒 NEW ESCROW ORDER\n\n` +
+                          `Device: ${itemTitle}\n` +
+                          `Price: ${itemPrice}\n` +
+                          `Buyer: ${buyerName} (${buyerTelegramHandle})\n` +
+                          `Phone: ${buyerPhone}\n` +
+                          `Address: ${buyerAddress}`;
 
-      const targetUrl = `https://t.me/${ADMIN_USERNAME}?text=${textMessage}`;
-      
-      try {
-        if (tg && typeof tg.openTelegramLink === 'function') {
-          tg.openTelegramLink(targetUrl);
-        } else {
-          window.open(targetUrl, '_blank');
-        }
-      } catch (err) {
-        window.location.href = targetUrl;
+      // Copy text and open chat cleanly
+      navigator.clipboard.writeText(textMessage).then(() => {
+        alert("Order copied to clipboard! Opening @techgebeya3. Please paste and send your order.");
+      }).catch(() => {
+        alert("Opening @techgebeya3. Please send your order details.");
+      });
+
+      const chatUrl = `https://t.me/${ADMIN_USERNAME}`;
+      if (tg && typeof tg.openTelegramLink === 'function') {
+        tg.openTelegramLink(chatUrl);
+      } else {
+        window.open(chatUrl, '_blank');
       }
 
       closeModal('buy-modal');
       document.getElementById('buy-form').reset();
     }
 
-    // Robust handler for Sell Listings with explicit photo check and multi-fallback redirection
+    // 100% Reliable Clipboard Copy + Chat Open for Sell Listing
     function handleSellSubmit(event) {
       event.preventDefault();
 
@@ -824,7 +826,7 @@
         return;
       }
 
-      const category = document.getElementById('sell-category').value;
+      const category = document.getElementById('sell-category').value.toUpperCase();
       const title = document.getElementById('sell-title').value;
       const ram = document.getElementById('sell-ram').value;
       const storage = document.getElementById('sell-storage').value;
@@ -834,51 +836,33 @@
       const box = document.getElementById('sell-box').checked ? "Yes" : "No";
       const sellerHandle = user?.username ? `@${user.username}` : "Not Set";
 
-      const payload = {
-        action: "new_seller_listing",
-        targetAdmin: `@${ADMIN_USERNAME}`,
-        category: category,
-        title: title,
-        ram: ram,
-        storage: storage,
-        battery: battery,
-        price: price,
-        sellerPhone: phone,
-        hasBox: box,
-        sellerHandle: sellerHandle,
-        photoBase64: uploadedImageBase64
-      };
-
-      if (tg) {
-        if (typeof tg.sendData === 'function') {
-          try { tg.sendData(JSON.stringify(payload)); } catch(e) {}
-        }
-        if (tg.HapticFeedback) {
-          tg.HapticFeedback.notificationOccurred('success');
-        }
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
       }
 
-      const directMsg = `📥 *New Listing Request for Approval*%0A%0A` +
-                        `*Category:* ${encodeURIComponent(category.toUpperCase())}%0A` +
-                        `*Device:* ${encodeURIComponent(title)}%0A` +
-                        `*Specs:* ${encodeURIComponent(ram)} RAM / ${encodeURIComponent(storage)}%0A` +
-                        `*Battery:* ${encodeURIComponent(battery)}%0A` +
-                        `*Box Included:* ${encodeURIComponent(box)}%0A` +
-                        `*Asking Price:* ${encodeURIComponent(price)}%0A` +
-                        `*Seller Phone:* ${encodeURIComponent(phone)}%0A` +
-                        `*Seller Handle:* ${encodeURIComponent(sellerHandle)}%0A%0A` +
-                        `_(Note: Photo uploaded via Mini App)_`;
+      const directMsg = `📥 NEW LISTING SUBMISSION\n\n` +
+                        `Category: ${category}\n` +
+                        `Device: ${title}\n` +
+                        `Specs: ${ram} RAM / ${storage}\n` +
+                        `Battery: ${battery}\n` +
+                        `Box Included: ${box}\n` +
+                        `Asking Price: ${price}\n` +
+                        `Seller Phone: ${phone}\n` +
+                        `Seller Handle: ${sellerHandle}\n\n` +
+                        `(Note: Photo was selected in Mini App)`;
 
-      const targetUrl = `https://t.me/${ADMIN_USERNAME}?text=${directMsg}`;
+      // Copy text and open chat cleanly
+      navigator.clipboard.writeText(directMsg).then(() => {
+        alert("Listing details copied to clipboard! Opening @techgebeya3. Please paste and send your details along with your photo.");
+      }).catch(() => {
+        alert("Opening @techgebeya3. Please send your listing details and photo.");
+      });
 
-      try {
-        if (tg && typeof tg.openTelegramLink === 'function') {
-          tg.openTelegramLink(targetUrl);
-        } else {
-          window.open(targetUrl, '_blank');
-        }
-      } catch (err) {
-        window.location.href = targetUrl;
+      const chatUrl = `https://t.me/${ADMIN_USERNAME}`;
+      if (tg && typeof tg.openTelegramLink === 'function') {
+        tg.openTelegramLink(chatUrl);
+      } else {
+        window.open(chatUrl, '_blank');
       }
 
       closeModal('sell-modal');
