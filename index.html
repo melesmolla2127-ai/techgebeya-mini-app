@@ -422,7 +422,7 @@
   <div class="header">
     <div class="brand-info">
       <h1>TechGebeya ቴክ ገበያ</h1>
-      <p>Laptops & Phones Only • Escrow: @brook_97</p>
+      <p>Laptops & Phones Only • Admin: @techgebeya2</p>
     </div>
     <div class="user-profile">
       <img id="user-avatar" class="avatar" style="display:none;" alt="Avatar" />
@@ -525,12 +525,12 @@
           <textarea id="buy-address" class="form-control" rows="2" placeholder="e.g. Addis Ababa, Bole Medhanialem" required></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Submit Escrow Order to @brook_97</button>
+        <button type="submit" class="btn-submit">Submit Escrow Order to @techgebeya2</button>
       </form>
     </div>
   </div>
 
-  <!-- Sell Device Modal (No Condition Score, No Color, File Attachment Enabled) -->
+  <!-- Sell Device Modal (Submits directly to Admin @techgebeya2) -->
   <div class="modal-overlay" id="sell-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -579,9 +579,8 @@
           <input type="tel" id="sell-phone" class="form-control" placeholder="e.g. 0911234567" required />
         </div>
 
-        <!-- Direct File Upload Field -->
         <div class="form-group">
-          <label>Attach Photo (Upload from Phone Gallery / Camera)</label>
+          <label>Attach Photo (Upload from Gallery / Camera)</label>
           <input 
             type="file" 
             id="sell-photo-input" 
@@ -603,16 +602,16 @@
           <label for="sell-verify">I agree to present Kebele ID & verify IMEI/Serial upon inspection.</label>
         </div>
 
-        <button type="submit" class="btn-submit">Publish Listing to Marketplace</button>
+        <button type="submit" class="btn-submit">Submit Listing for Review to @techgebeya2</button>
       </form>
     </div>
   </div>
 
   <script>
-    const ADMIN_USERNAME = "brook_97";
+    const ADMIN_USERNAME = "techgebeya2";
     const tg = window.Telegram?.WebApp;
     let uploadedImageBase64 = "";
-    
+
     if (tg) {
       tg.ready();
       tg.expand();
@@ -640,7 +639,7 @@
       document.getElementById('user-username').innerText = '@guest';
     }
 
-    // Initial Inventory
+    // Active Approved Products Array
     let products = [
       {
         id: "TG-101",
@@ -652,7 +651,7 @@
         box: true,
         price: 115000,
         phone: "0911223344",
-        seller: "@brook_97 (Bole SafeHub)",
+        seller: "@techgebeya2 (Verified Hub)",
         img: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=400&q=80"
       },
       {
@@ -665,28 +664,14 @@
         box: true,
         price: 78000,
         phone: "0922114455",
-        seller: "@kal_mobiles (Kazanchis)",
+        seller: "@techgebeya2 (Verified Hub)",
         img: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=400&q=80"
-      },
-      {
-        id: "TG-103",
-        title: "Dell XPS 13 Touch (i7 11th Gen)",
-        category: "laptop",
-        ram: "16GB",
-        storage: "512GB SSD",
-        battery: "Battery Health 85%",
-        box: false,
-        price: 58000,
-        phone: "0933445566",
-        seller: "@eyasu_gear (Piassa)",
-        img: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80"
       }
     ];
 
     let currentCategory = 'all';
     let searchQuery = '';
 
-    // Convert Selected Image File to Base64 String
     function handlePhotoUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -735,7 +720,7 @@
               <div class="product-title">${p.title}</div>
               <div class="product-specs">${specsSummary}</div>
               <div class="badges">
-                <span class="badge badge-verified">✓ IMEI/Kebele Verified</span>
+                <span class="badge badge-verified">✓ Verified by @techgebeya2</span>
               </div>
             </div>
             <div class="price-row">
@@ -802,82 +787,73 @@
       const buyerAddress = document.getElementById('buy-address').value;
       const buyerTelegramHandle = user?.username ? `@${user.username}` : "Not Set";
 
-      const orderData = {
-        action: "buy_device_request",
-        targetAdmin: `@${ADMIN_USERNAME}`,
-        itemId: document.getElementById('buy-item-id').value,
-        itemTitle: itemTitle,
-        itemPrice: itemPrice,
-        buyerName: buyerName,
-        buyerPhone: buyerPhone,
-        buyerAddress: buyerAddress,
-        buyerTelegramHandle: buyerTelegramHandle
-      };
-
       tg?.HapticFeedback?.notificationOccurred('success');
-      tg?.sendData(JSON.stringify(orderData));
 
-      const textMessage = `🛒 *New TechGebeya Buy Order*%0A%0A` +
+      const textMessage = `🛒 *New TechGebeya Purchase Request*%0A%0A` +
                           `*Device:* ${encodeURIComponent(itemTitle)}%0A` +
                           `*Price:* ${encodeURIComponent(itemPrice)}%0A` +
-                          `*Buyer Name:* ${encodeURIComponent(buyerName)}%0A` +
+                          `*Buyer:* ${encodeURIComponent(buyerName)} (${encodeURIComponent(buyerTelegramHandle)})%0A` +
                           `*Phone:* ${encodeURIComponent(buyerPhone)}%0A` +
-                          `*Address:* ${encodeURIComponent(buyerAddress)}%0A` +
-                          `*Telegram Handle:* ${encodeURIComponent(buyerTelegramHandle)}`;
+                          `*Address:* ${encodeURIComponent(buyerAddress)}`;
 
       window.open(`https://t.me/${ADMIN_USERNAME}?text=${textMessage}`, '_blank');
-
       closeModal('buy-modal');
       document.getElementById('buy-form').reset();
     }
 
+    // Handles user listing submission and sends details directly to @techgebeya2
     function handleSellSubmit(event) {
       event.preventDefault();
-
-      if (!uploadedImageBase64) {
-        alert("Please select a photo for your device.");
-        return;
-      }
 
       const category = document.getElementById('sell-category').value;
       const title = document.getElementById('sell-title').value;
       const ram = document.getElementById('sell-ram').value;
       const storage = document.getElementById('sell-storage').value;
       const battery = document.getElementById('sell-battery').value;
-      const price = parseInt(document.getElementById('sell-price').value);
+      const price = document.getElementById('sell-price').value + " ETB";
       const phone = document.getElementById('sell-phone').value;
-      const box = document.getElementById('sell-box').checked;
+      const box = document.getElementById('sell-box').checked ? "Yes" : "No";
+      const sellerHandle = user?.username ? `@${user.username}` : "Not Set";
 
-      const newProduct = {
-        id: "TG-" + Math.floor(100 + Math.random() * 900),
-        title: title,
+      const payload = {
+        action: "new_seller_listing",
+        targetAdmin: `@${ADMIN_USERNAME}`,
         category: category,
+        title: title,
         ram: ram,
         storage: storage,
-        battery: `Battery ${battery}`,
-        box: box,
+        battery: battery,
         price: price,
-        phone: phone,
-        seller: user?.username ? `@${user.username}` : 'Community Seller',
-        img: uploadedImageBase64
+        sellerPhone: phone,
+        hasBox: box,
+        sellerHandle: sellerHandle,
+        photoBase64: uploadedImageBase64
       };
 
-      products.unshift(newProduct);
-      renderCatalog();
+      // 1. Send data directly through Telegram Mini App WebApp channel
+      if (tg) {
+        tg.sendData(JSON.stringify(payload));
+        tg.HapticFeedback?.notificationOccurred('success');
+      }
+
+      // 2. Open direct chat window with @techgebeya2 containing formatted listing details
+      const directMsg = `📥 *New Listing Request for Approval*%0A%0A` +
+                        `*Category:* ${encodeURIComponent(category.toUpperCase())}%0A` +
+                        `*Device:* ${encodeURIComponent(title)}%0A` +
+                        `*Specs:* ${encodeURIComponent(ram)} RAM / ${encodeURIComponent(storage)}%0A` +
+                        `*Battery:* ${encodeURIComponent(battery)}%0A` +
+                        `*Box Included:* ${encodeURIComponent(box)}%0A` +
+                        `*Asking Price:* ${encodeURIComponent(price)}%0A` +
+                        `*Seller Phone:* ${encodeURIComponent(phone)}%0A` +
+                        `*Seller Handle:* ${encodeURIComponent(sellerHandle)}%0A%0A` +
+                        `_(Note: Photo is attached in the Mini App payload)_`;
+
+      window.open(`https://t.me/${ADMIN_USERNAME}?text=${directMsg}`, '_blank');
+
       closeModal('sell-modal');
-      
-      // Clear Form & Photo Preview
       document.getElementById('sell-form').reset();
       document.getElementById('photo-preview').style.display = 'none';
       uploadedImageBase64 = "";
-
-      tg?.HapticFeedback?.notificationOccurred('success');
-
-      tg?.sendData(JSON.stringify({
-        action: "new_device_listed",
-        targetAdmin: `@${ADMIN_USERNAME}`,
-        item: newProduct
-      }));
     }
 
     renderCatalog();
